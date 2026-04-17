@@ -1,21 +1,31 @@
 <?php
 
+namespace App\Http\Controllers;
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Employe extends Model
 {
+    // On garde uniquement les champs que vous utilisez réellement dans vos pages
     protected $fillable = [
-    'nom', 'prenom', 'email', 'telephone',
-    'poste', 'date_embauche', 'salaire',
-    'statut', 'departement_id'
+        'nom', 
+        'prenom', 
+        'telephone',
+        'poste', 
+        'date_embauche', 
+        'salaire',
+        'statut'
     ];
 
+    // Relation commentée car vous avez supprimé les départements des pages
+    /*
     public function departement()
     {
         return $this->belongsTo(Departement::class);
     }
+    */
 
     public function conges()
     {

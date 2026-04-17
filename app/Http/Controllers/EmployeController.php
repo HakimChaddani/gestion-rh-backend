@@ -9,41 +9,54 @@ class EmployeController extends Controller
 {
     public function index()
     {
-        return response()->json(Employe::with('departement')->get());
+        // On retourne la liste simple sans relation
+        return response()->json(Employe::all());
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nom'            => 'required|string',
-            'prenom'         => 'required|string',
-            'email'          => 'required|email|unique:employes',
-            'poste'          => 'required|string',
-            'date_embauche'  => 'required|date',
-            'salaire'        => 'required|numeric',
-            'departement_id' => 'required|exists:departements,id',
+        // 1. On valide uniquement ce qu'on reçoit de React
+        $validated = $request->validate([
+            'nom'            => 'required|string|max:255',
+            'prenom'         => 'required|string|max:255',
+            'telephone'      => 'nullable|string',
+            'poste'          => 'nullable|string',
+            'date_embauche'  => 'nullable|date',
+            'salaire'        => 'nullable|numeric',
         ]);
 
-        $employe = Employe::create($request->all());
-        return response()->json($employe->load('departement'), 201);
-    }
+        // 2. On crée l'employé en utilisant UNIQUEMENT les données validées
+        // On force le statut à 'actif' si nécessaire
+        $employe = Employe::create(array_merge($validated, [
+            'statut' => $request->statut ?? 'actif'
+        ]));
 
-    public function show($id)
-    {
-        $employe = Employe::with(['departement', 'conges'])->findOrFail($id);
-        return response()->json($employe);
+        return response()->json($employe, 201);
     }
 
     public function update(Request $request, $id)
     {
         $employe = Employe::findOrFail($id);
-        $employe->update($request->all());
-        return response()->json($employe->load('departement'));
+
+        $validated = $request->validate([
+            'nom'    => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'telephone'      => 'nullable|string',
+            'poste'          => 'nullable|string',
+            'date_embauche'  => 'nullable|date',
+            'salaire'        => 'nullable|numeric',
+            'statut'         => 'nullable|string',
+        ]);
+
+        $employe->update($validated);
+        
+        return response()->json($employe);
     }
 
     public function destroy($id)
     {
-        Employe::findOrFail($id)->delete();
+        $employe = Employe::findOrFail($id);
+        $employe->delete();
         return response()->json(['message' => 'Employé supprimé']);
     }
 }
