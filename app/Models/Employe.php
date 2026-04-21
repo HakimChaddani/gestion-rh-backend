@@ -9,31 +9,18 @@ use Illuminate\Database\Eloquent\Model;
 class Employe extends Model
 {
     // On garde uniquement les champs que vous utilisez réellement dans vos pages
-    protected $fillable = [
-        'nom', 
-        'prenom', 
-        'telephone',
-        'poste', 
-        'date_embauche', 
-        'salaire',
-        'statut'
-    ];
+   protected $fillable = [
+    'nom', 'prenom', 'telephone',
+    'poste', 'date_embauche', 'salaire', 'statut'
+];
 
-    // Relation commentée car vous avez supprimé les départements des pages
-    /*
-    public function departement()
-    {
-        return $this->belongsTo(Departement::class);
-    }
-    */
+public function conges()
+{
+    return $this->hasMany(Conge::class);
+}
 
-    public function conges()
-    {
-        return $this->hasMany(Conge::class);
-    }
-
-    public function trajets()
-    {
-        return $this->hasMany(Trajet::class);
-    }
+public function trajets()
+{
+    return $this->hasMany(Trajet::class);
+}
 }
